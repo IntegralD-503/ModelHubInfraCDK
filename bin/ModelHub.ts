@@ -25,5 +25,6 @@ const s3Stack = new S3Stack(app, 'S3Stack', {
 });
 
 new ModelHubApiStack(app, 'ModelHubAPIStack', {
-  s3Bucket: s3Stack.modelHubBucket
+  s3Bucket: s3Stack.modelHubBucket,
+  stageName: 'Test'
 });
