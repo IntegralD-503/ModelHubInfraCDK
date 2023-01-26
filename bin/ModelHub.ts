@@ -3,8 +3,11 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { S3Stack } from '../lib/s3-stack';
 import { ModelHubApiStack } from '../lib/model-hub-api';
+import { PipelineStack } from '../pipeline/pipeline-stack';
 
 const app = new cdk.App();
+const pipeline = new PipelineStack(app, 'ModelHubPipelineStack');
+
 const s3Stack = new S3Stack(app, 'S3Stack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
@@ -21,6 +24,6 @@ const s3Stack = new S3Stack(app, 'S3Stack', {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
 
-new ModelHubApiStack(app, 'LambdaStack', {
+new ModelHubApiStack(app, 'ModelHubAPIStack', {
   s3Bucket: s3Stack.modelHubBucket
 });
