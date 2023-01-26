@@ -6,7 +6,8 @@ import {
   CfnParametersCode,
   FunctionUrlAuthType,
   Runtime,
-  Function
+  Function,
+  Code
 } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
@@ -39,30 +40,32 @@ export class ModelHubApiStack extends cdk.Stack {
     //     },
     //   });
 
-    const modelHubLambda = new Function(this, "ServiceLambda", {
+    this.serviceCode = Code.fromCfnParameters()
+
+    const modelHubLambda = new Function(this, "ModelHubAPILambda", {
       runtime: Runtime.NODEJS_14_X,
       handler: "src/lambda.handler",
       code: this.serviceCode,
-      functionName: `ServiceLambda${props.stageName}`,
+      functionName: `ModelHubAPILambda${props.stageName}`,
       description: `Generated on ${new Date().toISOString()}`,
     });
 
-    const httpApi = new HttpApi(this, 'ServiceApi', {
+    const httpApi = new HttpApi(this, 'ModelHubApi', {
       defaultIntegration: new HttpLambdaIntegration("LambdaIntegration", modelHubLambda),
-      apiName: `MyService${props.stageName}`
+      apiName: `ModelHubAPI${props.stageName}`
   })
 
     props.s3Bucket.grantReadWrite(modelHubLambda);
 
-    const myFunctionUrl = modelHubLambda.addFunctionUrl({
-      authType: FunctionUrlAuthType.NONE,
-      cors: {
-        allowedOrigins: ["*"],
-      },
-    });
+    // const myFunctionUrl = modelHubLambda.addFunctionUrl({
+    //   authType: FunctionUrlAuthType.NONE,
+    //   cors: {
+    //     allowedOrigins: ["*"],
+    //   },
+    // });
 
-    new CfnOutput(this, "FunctionUrl", {
-      value: myFunctionUrl.url,
-    });
+    // new CfnOutput(this, "FunctionUrl", {
+    //   value: myFunctionUrl.url,
+    // });
   }
 }
