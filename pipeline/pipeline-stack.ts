@@ -1,8 +1,9 @@
 import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { PipelineProject, LinuxBuildImage, BuildSpec } from "aws-cdk-lib/aws-codebuild";
-import { Artifact, Pipeline } from "aws-cdk-lib/aws-codepipeline";
+import { Artifact, IStage, Pipeline } from "aws-cdk-lib/aws-codepipeline";
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from "aws-cdk-lib/aws-codepipeline-actions";
 import { Construct } from "constructs";
+import { ModelHubApiStack } from "../lib/model-hub-api";
 
 export class PipelineStack extends Stack {
     private readonly pipeline: Pipeline;
@@ -89,5 +90,23 @@ export class PipelineStack extends Stack {
           });
 
 
+    }
+
+    public addModelHubAPIStage(apiStack: ModelHubApiStack, stageName: string): IStage {
+      return this.pipeline.addStage({
+        stageName: stageName,
+        actions: [
+          new CloudFormationCreateUpdateStackAction({
+            actionName: 'ModelHubAPI_Update',
+            stackName: apiStack.stackName,
+            templatePath: this.cdkBuildOutput.atPath(`${apiStack.stackName}.template.json`),
+            adminPermissions: true,
+            parameterOverrides: {
+              ...apiStack.serviceCode.assign(this.modelHubAPIBuildOutput.s3Location)
+            },
+            extraInputs: [this.modelHubAPIBuildOutput]
+          })
+        ]
+      })
     }
 }

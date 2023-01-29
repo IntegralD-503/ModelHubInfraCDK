@@ -4,12 +4,10 @@ import * as cdk from "aws-cdk-lib";
 import { CfnOutput } from "aws-cdk-lib";
 import {
   CfnParametersCode,
-  FunctionUrlAuthType,
   Runtime,
   Function,
   Code
 } from "aws-cdk-lib/aws-lambda";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import path = require("path");
