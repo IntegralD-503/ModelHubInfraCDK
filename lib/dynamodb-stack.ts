@@ -1,22 +1,22 @@
-import * as cdk from 'aws-cdk-lib';
-import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
-import { Construct } from "constructs";
+// import * as cdk from 'aws-cdk-lib';
+// import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
+// import { Construct } from "constructs";
 
-interface DynamoDBStackProps extends cdk.StackProps {
-    readonly stageName: string;
-  }
+// interface DynamoDBStackProps extends cdk.StackProps {
+//     readonly stageName: string;
+//   }
 
-export class DynamoDBStack extends cdk.Stack {
-    public readonly modelHubDB: Table;
+// export class DynamoDBStack extends cdk.Stack {
+//     public readonly modelHubDB: Table;
   
-    constructor(scope: Construct, id: string, props: DynamoDBStackProps) {
-      super(scope, id, props);
+//     constructor(scope: Construct, id: string, props: DynamoDBStackProps) {
+//       super(scope, id, props);
   
-      this.modelHubDB = new Table(this, 'Table', { 
-        tableName: `ModelHubDB${props.stageName}`,
-        partitionKey: { name: 'id', type: AttributeType.STRING }, 
-        billingMode: BillingMode.PAY_PER_REQUEST, 
-      });
-    }
-  }
+//       this.modelHubDB = new Table(this, 'ModelHubTable', { 
+//         tableName: `ModelHubDB${props.stageName}`,
+//         partitionKey: { name: 'id', type: AttributeType.STRING }, 
+//         billingMode: BillingMode.PAY_PER_REQUEST, 
+//       });
+//     }
+//   }
   

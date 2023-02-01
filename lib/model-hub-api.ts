@@ -2,7 +2,7 @@ import { HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as cdk from "aws-cdk-lib";
 import { CfnOutput } from "aws-cdk-lib";
-import { Table } from "aws-cdk-lib/aws-dynamodb";
+import { AttributeType, BillingMode, Table } from "aws-cdk-lib/aws-dynamodb";
 import {
   CfnParametersCode,
   Runtime,
@@ -15,7 +15,6 @@ import path = require("path");
 
 interface ModelHubApiStackProps extends cdk.StackProps {
   readonly s3Bucket: Bucket;
-  readonly dynamodbTable: Table;
   readonly stageName: string;
 }
 
@@ -42,7 +41,14 @@ export class ModelHubApiStack extends cdk.Stack {
 
     this.serviceCode = Code.fromCfnParameters()
 
-    const modelHubLambda = new Function(this, "ModelHubAPILambda", {
+    // dynamodb doesn't seem to support being passed around stacks so just sticking it in here.
+    const modelHubDB = new Table(this, `ModelHubTable${props.stageName}`, { 
+      tableName: `ModelHubDB${props.stageName}`,
+      partitionKey: { name: 'id', type: AttributeType.STRING }, 
+      billingMode: BillingMode.PAY_PER_REQUEST, 
+    });
+
+    const modelHubLambda = new Function(this, `ModelHubAPILambda${props.stageName}`, {
       runtime: Runtime.NODEJS_14_X,
       handler: "src/lambda.handler",
       code: this.serviceCode,
@@ -50,17 +56,17 @@ export class ModelHubApiStack extends cdk.Stack {
       description: `Generated on ${new Date().toISOString()}`,
       environment: {
         BUCKET_NAME: props.s3Bucket.bucketName,
-        DYNAMODB_TABLE: props.dynamodbTable.tableName
+        DYNAMODB_TABLE: modelHubDB.tableName
       }
     });
 
-    const httpApi = new HttpApi(this, 'ModelHubApi', {
+    const httpApi = new HttpApi(this, `ModelHubApi${props.stageName}`, {
       defaultIntegration: new HttpLambdaIntegration("LambdaIntegration", modelHubLambda),
       apiName: `ModelHubAPI${props.stageName}`
   })
 
     props.s3Bucket.grantReadWrite(modelHubLambda);
-    props.dynamodbTable.grantReadWriteData(modelHubLambda);
+    modelHubDB.grantReadWriteData(modelHubLambda);
 
     // const myFunctionUrl = modelHubLambda.addFunctionUrl({
     //   authType: FunctionUrlAuthType.NONE,
