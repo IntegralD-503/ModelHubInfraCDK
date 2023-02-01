@@ -25,20 +25,6 @@ export class ModelHubApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ModelHubApiStackProps) {
     super(scope, id, props);
 
-    // const modelHubLambda = new NodejsFunction(this, "ModelHubLambdaHandler", {
-    //     runtime: Runtime.NODEJS_14_X,
-    //     entry: path.join(__dirname, `/../functions/index.ts`),
-    //     // bundling: {
-    //     //     externalModules:[
-    //     //         'aws-sdk'
-    //     //     ],
-    //     // },
-    //     handler: "src/lambda.handler",
-    //     environment: {
-    //       BUCKET_NAME: props!.s3Bucket.bucketName
-    //     },
-    //   });
-
     this.serviceCode = Code.fromCfnParameters()
 
     // dynamodb doesn't seem to support being passed around stacks so just sticking it in here.
