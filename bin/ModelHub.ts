@@ -16,10 +16,10 @@ const dynamodbStack = new DynamoDBStack(app, 'DynamoDBStack', {
 
 const apiStackBeta = new ModelHubApiStack(app, 'ModelHubAPIStackBeta', {
   s3Bucket: s3Stack.modelHubBucket,
-  dynamodbTable: dynamodbStack.modelHubDB,
+  // dynamodbTable: dynamodbStack.modelHubDB,
   stageName: 'Beta'
 });
 
-apiStackBeta.addDependency(dynamodbStack);
+// apiStackBeta.addDependency(dynamodbStack);
 
 pipelineStack.addModelHubAPIStage(apiStackBeta, "Beta");

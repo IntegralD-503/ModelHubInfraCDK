@@ -88,8 +88,6 @@ export class PipelineStack extends Stack {
               })
             ]
           });
-
-
     }
 
     public addModelHubAPIStage(apiStack: ModelHubApiStack, stageName: string): IStage {
