@@ -20,4 +20,6 @@ const apiStackBeta = new ModelHubApiStack(app, 'ModelHubAPIStackBeta', {
   stageName: 'Beta'
 });
 
+apiStackBeta.addDependency(dynamodbStack);
+
 pipelineStack.addModelHubAPIStage(apiStackBeta, "Beta");
