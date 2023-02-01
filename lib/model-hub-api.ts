@@ -2,6 +2,7 @@ import { HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as cdk from "aws-cdk-lib";
 import { CfnOutput } from "aws-cdk-lib";
+import { Table } from "aws-cdk-lib/aws-dynamodb";
 import {
   CfnParametersCode,
   Runtime,
@@ -14,6 +15,7 @@ import path = require("path");
 
 interface ModelHubApiStackProps extends cdk.StackProps {
   readonly s3Bucket: Bucket;
+  readonly dynamodbTable: Table;
   readonly stageName: string;
 }
 
@@ -46,6 +48,10 @@ export class ModelHubApiStack extends cdk.Stack {
       code: this.serviceCode,
       functionName: `ModelHubAPILambda${props.stageName}`,
       description: `Generated on ${new Date().toISOString()}`,
+      environment: {
+        BUCKET_NAME: props.s3Bucket.bucketName,
+        DYNAMODB_TABLE: props.dynamodbTable.tableName
+      }
     });
 
     const httpApi = new HttpApi(this, 'ModelHubApi', {
@@ -54,6 +60,7 @@ export class ModelHubApiStack extends cdk.Stack {
   })
 
     props.s3Bucket.grantReadWrite(modelHubLambda);
+    props.dynamodbTable.grantReadWriteData(modelHubLambda);
 
     // const myFunctionUrl = modelHubLambda.addFunctionUrl({
     //   authType: FunctionUrlAuthType.NONE,
