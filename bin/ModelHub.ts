@@ -10,13 +10,13 @@ const app = new cdk.App();
 const pipelineStack = new PipelineStack(app, 'ModelHubPipelineStack',{});
 
 const s3Stack = new S3Stack(app, 'S3Stack', {});
-const dynamodbStack = new DynamoDBStack(app, 'DynamoDBStack', {
+const dynamodbStack = new DynamoDBStack(app, 'ModelHubDBStack', {
   stageName: 'Beta'
 })
 
 const apiStackBeta = new ModelHubApiStack(app, 'ModelHubAPIStackBeta', {
   s3Bucket: s3Stack.modelHubBucket,
-  // dynamodbTable: dynamodbStack.modelHubDB,
+  dynamodbTable: dynamodbStack.modelHubDB,
   stageName: 'Beta'
 });
 

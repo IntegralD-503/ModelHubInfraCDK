@@ -15,7 +15,7 @@ import path = require("path");
 
 interface ModelHubApiStackProps extends cdk.StackProps {
   readonly s3Bucket: Bucket;
-  // readonly dynamodbTable: Table;
+  readonly dynamodbTable: Table;
   readonly stageName: string;
 }
 
@@ -50,7 +50,7 @@ export class ModelHubApiStack extends cdk.Stack {
       description: `Generated on ${new Date().toISOString()}`,
       environment: {
         BUCKET_NAME: props.s3Bucket.bucketName,
-        // DYNAMODB_TABLE: props.dynamodbTable.tableName
+        DYNAMODB_TABLE: props.dynamodbTable.tableName
       }
     });
 
@@ -60,7 +60,7 @@ export class ModelHubApiStack extends cdk.Stack {
   })
 
     props.s3Bucket.grantReadWrite(modelHubLambda);
-    // props.dynamodbTable.grantReadWriteData(modelHubLambda);
+    props.dynamodbTable.grantReadWriteData(modelHubLambda);
 
     // const myFunctionUrl = modelHubLambda.addFunctionUrl({
     //   authType: FunctionUrlAuthType.NONE,
